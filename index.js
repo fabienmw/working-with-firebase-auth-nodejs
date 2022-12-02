@@ -1,9 +1,10 @@
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-import { credential } from "firebase-admin/lib";
+import admin from "firebase-admin";
+import credentials from "./key.json" assert { type: "json" };
 
 initializeApp({
-  credential: credential.cert(credentials),
+  credential: admin.credential.cert(credentials),
 });
 
 let totalUsers = 0;
@@ -18,10 +19,14 @@ const listAllUsers = (nextPageToken) => {
       });
 
       if (listUsersResult.pageToken) {
+        // list the next batch of users
         listAllUsers(listUsersResult.pageToken);
       }
+      console.log(`Total users: ${totalUsers}`);
     })
     .catch((error) => {
       console.error(`Error listing users: ${error}`);
     });
 };
+
+listAllUsers();
